@@ -1,0 +1,10 @@
+rvm use 1.9.2@echo_service --create
+
+if [ ! `which bundle` ]; then
+  echo "Installing Bundler..."
+  gem install bundler
+  echo "Installing gems..."
+  bundle install
+fi
+
+bundle check
