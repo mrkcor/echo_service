@@ -10,7 +10,6 @@ class TestEchoService < MiniTest::Unit::TestCase
   def test_echo_service
     post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
-   <soapenv:Header/>
    <soapenv:Body>
       <echo:EchoRequest>
          <echo:Message>Hello World!</echo:Message>
@@ -33,7 +32,6 @@ class TestEchoService < MiniTest::Unit::TestCase
   def test_echo_service_gives_soap_error_on_invalid_message
     post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
-   <soapenv:Header/>
    <soapenv:Body>
       <echo:EchoRequest>
       </echo:EchoRequest>
