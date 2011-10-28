@@ -9,7 +9,6 @@ group :development, :test do
   gem "guard-process"
   gem "guard-minitest"
   gem "minitest"
-  gem "mocha"
   gem "rack-test"
   gem "rake"
 end
