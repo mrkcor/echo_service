@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.without-brains.net/echo_service" xmlns:hello="http://www.without-brains.net/echo" targetNamespace="http://www.without-brains.net/echo_service">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.without-brains.net/echo_service" xmlns:echo="http://www.without-brains.net/echo" targetNamespace="http://www.without-brains.net/echo_service">
   <wsdl:types>
     <xs:schema xmlns="http://www.without-brains.net/echo" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.without-brains.net/echo" attributeFormDefault="qualified" elementFormDefault="qualified">
       <xs:include schemaLocation="./echo_service.xsd"/>
     </xs:schema>
   </wsdl:types>
   <wsdl:message name="EchoRequestMessage">
-    <wsdl:part name="parameter" element="hello:EchoRequest"/>
+    <wsdl:part name="parameter" element="echo:EchoRequest"/>
   </wsdl:message>
   <wsdl:message name="EchoResponseMessage">
-    <wsdl:part name="parameter" element="hello:EchoResponse"/>
+    <wsdl:part name="parameter" element="echo:EchoResponse"/>
   </wsdl:message>
   <wsdl:portType name="EchoPortType">
     <wsdl:operation name="Echo">
