@@ -7,6 +7,10 @@ require 'builder'
 class EchoService < Sinatra::Base
   set :root, File.dirname(__FILE__)
 
+  configure do
+    mime_type :xml, "text/xml"
+  end
+
   def initialize(*args)
     @xsd = Nokogiri::XML::Schema(File.read("#{File.dirname(__FILE__)}/public/echo_service.xsd"))
     @xslt = Nokogiri::XSLT(File.read("#{File.dirname(__FILE__)}/lib/soap_body.xslt"))
@@ -17,9 +21,12 @@ class EchoService < Sinatra::Base
     begin
       request.body.rewind
       doc = Nokogiri::XML(request.body.read)
-      soap_message = @xslt.transform(doc)
-      errors = @xsd.validate(soap_message).map{|e| e.message}.join(", ")
-      raise errors unless errors == ""
+      # XSLT transform with Nokogiri in JRuby leads to a NullPointerException
+      unless RUBY_PLATFORM =~ /java/
+        soap_message = @xslt.transform(doc)
+        errors = @xsd.validate(soap_message).map{|e| e.message}.join(", ")
+        raise errors unless errors == ""
+      end
       message = doc.root.at_xpath('//echo:Message/text()', 'echo' => 'http://www.without-brains.net/echo')
       builder(:echo_response, :locals => {:message => message})
     rescue Exception => e
@@ -27,3 +34,5 @@ class EchoService < Sinatra::Base
     end
   end
 end
+
+EchoService.run!(:port => 9292)
