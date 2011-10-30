@@ -5,6 +5,20 @@ require 'nokogiri'
 require 'builder'
 
 class EchoService < Sinatra::Base
+  module SoapFault
+    class MustUnderstandError < StandardError
+      def fault_code
+        "MustUnderstand"
+      end
+    end
+
+    class ClientError < StandardError
+      def fault_code
+        "Client"
+      end
+    end
+  end
+
   set :root, File.dirname(__FILE__)
 
   configure do
@@ -19,13 +33,15 @@ class EchoService < Sinatra::Base
 
   post '/echo_service' do
     begin
-      doc = Nokogiri::XML(request.body.read)
-      soap_message = @xslt.transform(doc)
-      errors = @xsd.validate(soap_message).map{|e| e.message}.join(", ")
-      raise errors unless errors == ""
-      self.send(soap_operation_to_method(soap_message), soap_message)
-    rescue Exception => e
-      halt(500, builder(:fault, :locals => {:fault_string => e.message}))
+      soap_message = Nokogiri::XML(request.body.read)
+      raise(SoapFault::MustUnderstandError, "SOAP Must Understand Error", "MustUnderstand") if soap_message.root.at_xpath('//soap:Header/*[@soap:mustUnderstand="1"]', 'soap' => 'http://schemas.xmlsoap.org/soap/envelope/')
+      soap_body = @xslt.transform(soap_message)
+      errors = @xsd.validate(soap_body).map{|e| e.message}.join(", ")
+      raise(SoapFault::ClientError, errors) unless errors == ""
+      self.send(soap_operation_to_method(soap_body), soap_body)
+    rescue StandardError => e
+      fault_code = e.respond_to?(:fault_code) ? e.fault_code : "Server"
+      halt(500, builder(:fault, :locals => {:fault_string => e.message, :fault_code => fault_code}))
     end
   end
 
@@ -36,17 +52,17 @@ class EchoService < Sinatra::Base
 
   private
 
-  def soap_operation_to_method(soap_message)
-    method = soap_message.root.name.sub(/Request$/, '').gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').downcase.to_sym
+  def soap_operation_to_method(soap_body)
+    method = soap_body.root.name.sub(/Request$/, '').gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').downcase.to_sym
   end
 
-  def echo(soap_message)
-    message = soap_message.root.at_xpath('//echo:Message/text()', 'echo' => 'http://www.without-brains.net/echo').to_s
+  def echo(soap_body)
+    message = soap_body.root.at_xpath('//echo:Message/text()', 'echo' => 'http://www.without-brains.net/echo').to_s
     builder(:echo_response, :locals => {:message => message})
   end
 
-  def reverse_echo(soap_message)
-    message = soap_message.root.at_xpath('//echo:Message/text()', 'echo' => 'http://www.without-brains.net/echo').to_s.reverse!
+  def reverse_echo(soap_body)
+    message = soap_body.root.at_xpath('//echo:Message/text()', 'echo' => 'http://www.without-brains.net/echo').to_s.reverse!
     builder(:reverse_echo_response, :locals => {:message => message})
   end
 end

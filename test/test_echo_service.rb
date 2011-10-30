@@ -54,6 +54,7 @@ class TestEchoService < MiniTest::Unit::TestCase
     assert_equal expected, last_response.body.strip
     assert_equal 200, last_response.status
   end
+
   def test_echo_service_gives_soap_error_on_invalid_message
     post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
@@ -68,6 +69,34 @@ class TestEchoService < MiniTest::Unit::TestCase
     <SOAP:Fault>
       <faultcode>SOAP:Client</faultcode>
       <faultstring>Element '{http://www.without-brains.net/echo}EchoRequest': Missing child element(s). Expected is ( {http://www.without-brains.net/echo}Message ).</faultstring>
+    </SOAP:Fault>
+  </SOAP:Body>
+</SOAP:Envelope>}
+
+    assert_equal expected.strip, last_response.body.strip
+    assert_equal 500, last_response.status
+  end
+
+  def test_echo_service_gives_error_for_must_understand_soap_headers
+    post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
+   <soapenv:Header>
+     <echo:RandomHeader soapenv:mustUnderstand="1">
+       Yes
+     </echo:RandomHeader/>
+   </soapenv:Header>
+   <soapenv:Body>
+      <echo:EchoRequest>
+         <echo:Message>Hello World!</echo:Message>
+      </echo:EchoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>}
+
+  expected = %Q{<SOAP:Envelope xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP:Body>
+    <SOAP:Fault>
+      <faultcode>SOAP:MustUnderstand</faultcode>
+      <faultstring>SOAP Must Understand Error</faultstring>
     </SOAP:Fault>
   </SOAP:Body>
 </SOAP:Envelope>}
