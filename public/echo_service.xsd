@@ -7,4 +7,6 @@
   </xs:complexType>
   <xs:element name="EchoRequest" type="EchoMessageType"/>
   <xs:element name="EchoResponse" type="EchoMessageType"/>
+  <xs:element name="ReverseEchoRequest" type="EchoMessageType"/>
+  <xs:element name="ReverseEchoResponse" type="EchoMessageType"/>
 </xs:schema>

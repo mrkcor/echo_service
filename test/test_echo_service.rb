@@ -7,7 +7,11 @@ class TestEchoService < MiniTest::Unit::TestCase
     EchoService
   end
 
-  def test_echo_service
+  def teardown
+    ENV['BASE_URL'] = nil
+  end
+
+  def test_echo_service_echo
     post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
    <soapenv:Body>
@@ -29,6 +33,27 @@ class TestEchoService < MiniTest::Unit::TestCase
     assert_equal 200, last_response.status
   end
 
+  def test_echo_service_reverse
+    post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
+   <soapenv:Body>
+      <echo:ReverseEchoRequest>
+         <echo:Message>Hello World!</echo:Message>
+      </echo:ReverseEchoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>}
+
+  expected = %Q{<SOAP:Envelope xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
+  <SOAP:Body>
+    <echo:ReverseEchoResponse>
+      <echo:Message>!dlorW olleH</echo:Message>
+    </echo:ReverseEchoResponse>
+  </SOAP:Body>
+</SOAP:Envelope>}
+
+    assert_equal expected, last_response.body.strip
+    assert_equal 200, last_response.status
+  end
   def test_echo_service_gives_soap_error_on_invalid_message
     post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">

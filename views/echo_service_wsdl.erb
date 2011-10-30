@@ -11,16 +11,35 @@
   <wsdl:message name="EchoResponseMessage">
     <wsdl:part name="parameter" element="echo:EchoResponse"/>
   </wsdl:message>
+  <wsdl:message name="ReverseEchoRequestMessage">
+    <wsdl:part name="parameter" element="echo:ReverseEchoRequest"/>
+  </wsdl:message>
+  <wsdl:message name="ReverseEchoResponseMessage">
+    <wsdl:part name="parameter" element="echo:ReverseEchoResponse"/>
+  </wsdl:message>
   <wsdl:portType name="EchoPortType">
     <wsdl:operation name="Echo">
       <wsdl:input message="tns:EchoRequestMessage"/>
       <wsdl:output message="tns:EchoResponseMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ReverseEcho">
+      <wsdl:input message="tns:ReverseEchoRequestMessage"/>
+      <wsdl:output message="tns:ReverseEchoResponseMessage"/>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="EchoBinding" type="tns:EchoPortType">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="Echo">
       <soap:operation soapAction="http://www.without-brains.net/echo_service#Echo"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReverseEcho">
+      <soap:operation soapAction="http://www.without-brains.net/echo_service#ReverseEcho"/>
       <wsdl:input>
         <soap:body use="literal"/>
       </wsdl:input>
