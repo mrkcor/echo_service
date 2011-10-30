@@ -4,7 +4,7 @@ guard 'minitest' do
   watch(%r|^test/test_helper\.rb|)    { "test" }
 end
 
-guard 'process', :name => 'EchoService', :command => 'rackup', :stop_signal => "KILL"  do
+guard 'process', :name => 'EchoService', :command => 'ruby start.rb', :stop_signal => "KILL"  do
   watch('echo_service.rb')
   watch('Gemfile.lock')
 end
