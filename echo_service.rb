@@ -34,5 +34,3 @@ class EchoService < Sinatra::Base
     end
   end
 end
-
-EchoService.run!(:port => 9292)
