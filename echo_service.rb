@@ -33,4 +33,9 @@ class EchoService < Sinatra::Base
       halt(500, builder(:fault, :locals => {:fault_string => e.message}))
     end
   end
+
+  get '/echo_service.wsdl' do
+    url = ENV['BASE_URL'] || "http://localhost:9292"
+    erb(:echo_service_wsdl, :locals => {:url => url}, :content_type => :xml)
+  end
 end
