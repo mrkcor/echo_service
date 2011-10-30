@@ -46,7 +46,7 @@ class TestEchoService < MiniTest::Unit::TestCase
   expected = %Q{<SOAP:Envelope xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
   <SOAP:Body>
     <echo:ReverseEchoResponse>
-      <echo:Message>!dlorW olleH</echo:Message>
+      <echo:Message>!dlroW olleH</echo:Message>
     </echo:ReverseEchoResponse>
   </SOAP:Body>
 </SOAP:Envelope>}
