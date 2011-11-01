@@ -34,7 +34,7 @@ class EchoService < Sinatra::Base
   post '/echo_service' do
     begin
       soap_message = Nokogiri::XML(request.body.read)
-      raise(SoapFault::MustUnderstandError, "SOAP Must Understand Error", "MustUnderstand") if soap_message.root.at_xpath('//soap:Header/*[@soap:mustUnderstand="1"]', 'soap' => 'http://schemas.xmlsoap.org/soap/envelope/')
+      raise(SoapFault::MustUnderstandError, "SOAP Must Understand Error", "MustUnderstand") if soap_message.root.at_xpath('//soap:Header/*[@soap:mustUnderstand="1" and not(@soap:actor)]', 'soap' => 'http://schemas.xmlsoap.org/soap/envelope/')
       soap_body = @xslt.transform(soap_message)
       errors = @xsd.validate(soap_body).map{|e| e.message}.join(", ")
       raise(SoapFault::ClientError, errors) unless errors == ""

@@ -105,6 +105,64 @@ class TestEchoService < MiniTest::Unit::TestCase
     assert_equal 500, last_response.status
   end
 
+  def test_echo_service_ignores_soap_headers_with_actor_attribute_set
+    post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
+   <soapenv:Header>
+     <echo:RandomHeader soapenv:mustUnderstand="1" soapenv:actor="http://www.without-brains.net/another_service">
+       Yes
+     </echo:RandomHeader/>
+   </soapenv:Header>
+   <soapenv:Body>
+      <echo:EchoRequest>
+         <echo:Message>Hello World!</echo:Message>
+      </echo:EchoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>}
+
+  expected = %Q{<SOAP:Envelope xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
+  <SOAP:Body>
+    <echo:EchoResponse>
+      <echo:Message>Hello World!</echo:Message>
+    </echo:EchoResponse>
+  </SOAP:Body>
+</SOAP:Envelope>}
+
+    assert_equal expected.strip, last_response.body.strip
+    assert_equal 200, last_response.status
+  end
+
+  def test_echo_service_checks_all_soap_headers
+    post "/echo_service", %Q{<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:echo="http://www.without-brains.net/echo">
+   <soapenv:Header>
+     <echo:FirstRandomHeader soapenv:mustUnderstand="1" soapenv:actor="http://www.without-brains.net/another_service">
+       Yes
+     </echo:FirstRandomHeader/>
+     <echo:SecondRandomHeader soapenv:mustUnderstand="1">
+       Yes
+     </echo:SecondRandomHeader/>
+   </soapenv:Header>
+   <soapenv:Body>
+      <echo:EchoRequest>
+         <echo:Message>Hello World!</echo:Message>
+      </echo:EchoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>}
+
+  expected = %Q{<SOAP:Envelope xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP:Body>
+    <SOAP:Fault>
+      <faultcode>SOAP:MustUnderstand</faultcode>
+      <faultstring>SOAP Must Understand Error</faultstring>
+    </SOAP:Fault>
+  </SOAP:Body>
+</SOAP:Envelope>}
+
+    assert_equal expected.strip, last_response.body.strip
+    assert_equal 500, last_response.status
+  end
+
   def test_wsdl_has_endpoint_url_based_on_env
     ENV['BASE_URL'] = 'http://echo.without-brains.net'
     get '/echo_service.wsdl'
