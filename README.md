@@ -2,7 +2,7 @@ EchoService [![Build Status](https://secure.travis-ci.org/mkremer/echo_service.p
 ==============
 Example of a basic SOAP service written in Ruby (1.9)
 
-The EchoService works with Ruby 1.9.2 and 1.9.3. It will not work with JRuby because of [Nokogiri issue #494])https://github.com/tenderlove/nokogiri/issues/494)
+The EchoService works with Ruby 1.9.2 and 1.9.3. It will not work with JRuby because of [Nokogiri issue #494](https://github.com/tenderlove/nokogiri/issues/494)
 
 Usage
 -----
