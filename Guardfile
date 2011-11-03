@@ -8,7 +8,7 @@ group :test do
 end
 
 group :run do
-  guard 'process', :name => 'EchoService', :command => 'ruby start.rb', :stop_signal => "KILL"  do
+  guard 'process', :name => 'EchoService', :command => 'ruby echo_service.rb', :stop_signal => "KILL"  do
     watch('echo_service.rb')
     watch('Gemfile.lock')
   end

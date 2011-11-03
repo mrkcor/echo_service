@@ -66,3 +66,7 @@ class EchoService < Sinatra::Base
     builder(:reverse_echo_response, :locals => {:message => message})
   end
 end
+
+if __FILE__ == $0
+  EchoService.run!(port: 9292)
+end
