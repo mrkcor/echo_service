@@ -46,7 +46,7 @@ class EchoService < Sinatra::Base
   end
 
   get '/echo_service.wsdl' do
-    url = ENV['BASE_URL'] || "http://localhost:9292"
+    url = ENV['BASE_URL'] || "http://localhost:#{request.port}"
     erb(:echo_service_wsdl, :locals => {:url => url}, :content_type => :xml)
   end
 
