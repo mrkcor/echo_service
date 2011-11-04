@@ -177,6 +177,6 @@ class TestEchoService < MiniTest::Unit::TestCase
     assert_equal 200, last_response.status
     wsdl_doc = Nokogiri::XML(last_response.body)
     endpoint_url =  wsdl_doc.root.at_xpath('//wsdl:service/wsdl:port/soap:address/@location', 'wsdl' => 'http://schemas.xmlsoap.org/wsdl/', 'soap' => 'http://schemas.xmlsoap.org/wsdl/soap/').value
-    assert_equal "http://localhost:9292/echo_service", endpoint_url
+    assert_equal "http://localhost:#{last_request.port}/echo_service", endpoint_url
   end
 end
