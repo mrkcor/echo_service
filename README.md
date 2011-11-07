@@ -8,7 +8,7 @@ If you have any issues, suggestions, improvements, etc. then please log them usi
 
 Usage
 -----
-To run the EchoService run "rackup" or "ruby echo_service.rb" (on Windows rackup does not work)
+To run the EchoService run "bundle exec rackup" 
 
 The default endpoint URL in the WSDL is http://localhost:9292/echo_service.wsdl, you can set the environmental variable BASE_URL to replace http://localhost:9292 with whatever is appropriate for you (per example http://echo.without-brains.net)
 
